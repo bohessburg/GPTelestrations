@@ -1,0 +1,41 @@
+<!-- static/index.html -->
+<input id="textPrompt" placeholder="Describe the image">
+<button onclick="genImage()">Draw!</button>
+<br><img id="resultImg" style="max-width:400px">
+<hr>
+<input type="file" id="imgFile" accept="image/*">
+<button onclick="genPrompt()">Prompt-me!</button>
+<pre id="resultPrompt"></pre>
+
+<script>
+async function genImage() {
+  const prompt = document.getElementById("textPrompt").value;
+  const r = await fetch("/api/gen-image", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({prompt})
+  });
+  const {url} = await r.json();
+  document.getElementById("resultImg").src = url;
+}
+
+async function genPrompt() {
+  const file = document.getElementById("imgFile").files[0];
+  const b64  = await fileToBase64(file);
+  const r = await fetch("/api/gen-prompt", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({image:b64})
+  });
+  const {prompt} = await r.json();
+  document.getElementById("resultPrompt").innerText = prompt;
+}
+
+function fileToBase64(f){
+  return new Promise(res=>{
+    const r=new FileReader();
+    r.onload=()=>res(r.result);
+    r.readAsDataURL(f);
+  });
+}
+</script>
