@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPTelestrations</title>
+    <link href="{{ url_for('static', filename='styles/style.css')}} " rel="stylesheet" />
+</head>
+<body>
+    <h1>GPTelestrations</h1>
+    <form action="/generate">
+        <input type="text" name="prompt" id="input_prompt" placeholder="Enter a prompt"/>
+        <button type="submit">Enter</button>
+    </form>
+</body>
+</html>

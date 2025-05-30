@@ -1,14 +1,20 @@
 from openai import OpenAI
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+
+openai_api_key = os.environ.get("OPENAI_API_KEY")
 class Telestrations:
-    def __init__(self):
+    def __init__(self, styles):
+
         self.client = OpenAI()
-        self.image_from_prompt_model = "gpt-image-1"
+        self.image_from_prompt_model = "dall-e-2"
         self.prompt_from_image_model = "gpt-4o-mini"
-        self.styles = {"MS-Paint", "sketch","simple line drawing"}
+        self.styles = styles
         self.max_prompt_length = 100
         self.max_prompt_words = 6
-        self.image_size = "128x128"
+        self.image_size = "256x256"
 
     def set_model(self, model_string):
         self.model = model_string
@@ -25,7 +31,7 @@ class Telestrations:
             return None
 
         img = self.client.images.generate(
-            model=self.prompt_from_image_model,
+            model=self.image_from_prompt_model,
             prompt = "{p}, {s}".format(p=image_prompt, s=', '.join(self.styles)),
             size= self.image_size
         )

@@ -1,26 +1,32 @@
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session
 from telestrations import Telestrations
-import os
-from dotenv import load_dotenv
+from waitress import serve
 
-app = Flask(__name__, static_folder="static", static_url_path="")
-load_dotenv()
 
-openai_api_key = os.environ.get("OPENAI_API_KEY")
+app = Flask(__name__)
+app.secret_key='development_key_69420hthtuhtuhtuhtu'
 
-svc = Telestrations()
+@app.route('/')
+@app.route('/index')
 
-@app.post("/api/gen-image")
-def gen_image():
-    return jsonify({"url": svc.get_image_url_from_prompt(request.json["prompt"])})
+def index():
+    return render_template('index.html')
 
-@app.post("/api/gen-prompt")
-def gen_prompt():
-    return jsonify({"prompt": svc.get_prompt_from_image(request.json["image"])})
+@app.route('/generate')
+def generate_image():
+    prompt = request.args.get('prompt','')
+    T = Telestrations(styles=["Simple line drawing"])
+    img_url = T.get_image_url_from_prompt(prompt)
+    session['img_url'] = img_url
+    img_url = session.get('img_url', None)
+
+    return render_template(
+        'gptelestrations.html',
+        prompt = prompt,
+        img_url = img_url)
+    
+
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    serve(app, host="0.0.0.0", port=8000)
 
-@app.get("/")
-def home():
-    return app.send_static_file("index.html")
